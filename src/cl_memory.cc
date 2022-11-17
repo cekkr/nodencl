@@ -47,10 +47,7 @@ public:
     error = mGpuAccess->getKernelMem(runParams, isImageParam, access, isSVM, kernelMem, queueNum);
     PASS_CL_ERROR;
 
-    if (isSVM)
-      error = clSetKernelArgSVMPointer(kernel, paramIndex, kernelMem);
-    else
-      error = clSetKernelArg(kernel, paramIndex, sizeof(cl_mem), kernelMem);
+    error = clSetKernelArg(kernel, paramIndex, sizeof(cl_mem), kernelMem);
     return error;
   }
 
@@ -75,15 +72,15 @@ public:
     cl_mem_flags clMemFlags = (eMemFlags::READONLY == mMemFlags) ? CL_MEM_READ_ONLY :
                               (eMemFlags::WRITEONLY == mMemFlags) ? CL_MEM_WRITE_ONLY :
                               CL_MEM_READ_WRITE;
-    cl_svm_mem_flags clSvmMemFlags = clMemFlags;
-    if (eSvmType::FINE == mSvmType)
-      clSvmMemFlags |= CL_MEM_SVM_FINE_GRAIN_BUFFER;
+    cl_mem_flags clSvmMemFlags = clMemFlags;
+    //if (eSvmType::FINE == mSvmType) clSvmMemFlags |= CL_MEM_SVM_FINE_GRAIN_BUFFER;
 
     switch (mSvmType) {
     case eSvmType::FINE:
     case eSvmType::COARSE:
-      mHostBuf = clSVMAlloc(mContext, clSvmMemFlags, mNumBytes, 0);
-      mPinnedMem = clCreateBuffer(mContext, clMemFlags | CL_MEM_USE_HOST_PTR, mNumBytes, mHostBuf, &error);
+      //mHostBuf = clSVMAlloc(mContext, clSvmMemFlags, mNumBytes, 0);
+      //mPinnedMem = clCreateBuffer(mContext, clMemFlags | CL_MEM_USE_HOST_PTR, mNumBytes, mHostBuf, &error);
+      printf("SVM removed 424893");
       break;
     case eSvmType::NONE:
     default:
@@ -147,9 +144,10 @@ public:
         }
         mHostMapped = true;
       } else if (eSvmType::COARSE == mSvmType) {
-        error = clEnqueueSVMMap(getCommandQueue(queueNum), blockingMap, mapFlags, mHostBuf, mNumBytes, 0, nullptr, nullptr);
+        /*error = clEnqueueSVMMap(getCommandQueue(queueNum), blockingMap, mapFlags, mHostBuf, mNumBytes, 0, nullptr, nullptr);
         PASS_CL_ERROR;
-        mHostMapped = true;
+        mHostMapped = true;*/
+        printf("SVM removed 2954354839");
       }
 
       mMapFlags = haFlags;
@@ -175,8 +173,8 @@ public:
       printf("OpenCL error in subroutine. Location %s(%d). Error %i: %s\n",
         __FILE__, __LINE__, error, clGetErrorString(error));
 
-    if (mHostBuf && (eSvmType::NONE != mSvmType))
-      clSVMFree(mContext, mHostBuf);
+    // SVM removed for OpenCL 1.2
+    //if (mHostBuf && (eSvmType::NONE != mSvmType)) clSVMFree(mContext, mHostBuf);
 
     if (mImageMem) {
       error = clReleaseMemObject(mImageMem);
@@ -243,8 +241,10 @@ private:
     if (mHostMapped) {
       if (eSvmType::NONE == mSvmType)
         error = clEnqueueUnmapMemObject(getCommandQueue(queueNum), mPinnedMem, mHostBuf, 0, nullptr, nullptr);
-      else if (eSvmType::COARSE == mSvmType)
-        error = clEnqueueSVMUnmap(getCommandQueue(queueNum), mHostBuf, 0, 0, nullptr);
+      else if (eSvmType::COARSE == mSvmType){
+        printf("SVM removed 234892345");
+        //error = clEnqueueSVMUnmap(getCommandQueue(queueNum), mHostBuf, 0, 0, nullptr);
+      }
       mHostMapped = false;
       mMapFlags = eMemFlags::NONE;
     }
