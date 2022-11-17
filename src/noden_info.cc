@@ -129,10 +129,10 @@ const char* getDeviceBitfieldLiteral(cl_device_info info, int64_t value) {
     case CL_DEVICE_DOUBLE_FP_CONFIG: return getDeviceFPConfig(value);
     case CL_DEVICE_EXECUTION_CAPABILITIES: return getDeviceExecCaps(value);
     case CL_DEVICE_PARTITION_AFFINITY_DOMAIN: return getDevicePartitionAffinityDomain(value);
-    case CL_DEVICE_QUEUE_ON_DEVICE_PROPERTIES: return getDeviceCommandQProps(value);
-    case CL_DEVICE_QUEUE_ON_HOST_PROPERTIES: return getDeviceCommandQProps(value);
+    //case CL_DEVICE_QUEUE_ON_DEVICE_PROPERTIES: return getDeviceCommandQProps(value);
+    //case CL_DEVICE_QUEUE_ON_HOST_PROPERTIES: return getDeviceCommandQProps(value);
     case CL_DEVICE_SINGLE_FP_CONFIG: return getDeviceFPConfig(value);
-    case CL_DEVICE_SVM_CAPABILITIES: return getDeviceSvmCapabilities(value);
+    //case CL_DEVICE_SVM_CAPABILITIES: return getDeviceSvmCapabilities(value);
     case CL_DEVICE_TYPE: return getDeviceType(value);
     default: return nullptr;
   }
@@ -470,10 +470,10 @@ napi_value getPlatformInfo(napi_env env, napi_callback_info info) {
     status = napi_set_named_property(env, result, "extensions", param);
     CHECK_STATUS;
 
-    status = getPlatformParamUlong(env, platformIds[platformId], CL_PLATFORM_HOST_TIMER_RESOLUTION, &param);
+    /*status = getPlatformParamUlong(env, platformIds[platformId], CL_PLATFORM_HOST_TIMER_RESOLUTION, &param);
     CHECK_STATUS;
     status = napi_set_named_property(env, result, "hostTimerResolution", param);
-    CHECK_STATUS;
+    CHECK_STATUS;*/
 
     // For extensions. Include "cl_ext,h" - out of scope for now
     /* status = getPlatformParam(env, platformIds[platformId], CL_PLATFORM_ICD_SUFFIX_KHR, &param);

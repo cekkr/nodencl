@@ -146,11 +146,11 @@ void createContextExecute(napi_env env, void* data) {
   c->context = clCreateContext(properties, 1, contextDevices, nullptr, nullptr, &error);
   ASYNC_CL_ERROR;
 
-  cl_queue_properties props[] = {
+  cl_queue_properties_APPLE props[] = {
     // CL_QUEUE_PROPERTIES, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE | CL_QUEUE_ON_DEVICE | CL_QUEUE_ON_DEVICE_DEFAULT,
     0 };
   for (uint32_t i = 0; i < c->numQueues; ++i) {
-    c->commandQueues.push_back(clCreateCommandQueueWithProperties(c->context, c->deviceId, props, &error));
+    c->commandQueues.push_back(clCreateCommandQueueWithPropertiesAPPLE(c->context, c->deviceId, props, &error));
     ASYNC_CL_ERROR;
   }
 
@@ -377,12 +377,17 @@ napi_value createContext(napi_env env, napi_callback_info info) {
   }
 
   cl_ulong svmCaps;
-  error = clGetDeviceInfo(carrier->deviceId, CL_DEVICE_SVM_CAPABILITIES, sizeof(cl_ulong), &svmCaps, nullptr);
+  
+  // !! WARNING !!
+  // CL_DEVICE_SVM_CAPABILITIES not existing in OpenCL 1.2
+  // checking alternatives on https://registry.khronos.org/OpenCL/sdk/2.0/docs/man/xhtml/clGetDeviceInfo.html
+  error = clGetDeviceInfo(carrier->deviceId, CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &svmCaps, nullptr);
   if (error == CL_INVALID_VALUE) {
     svmCaps = 0;
   } else {
     CHECK_CL_ERROR;
   }
+
 
   napi_value context;
   status = napi_create_object(env, &context);

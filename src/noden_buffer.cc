@@ -396,8 +396,8 @@ napi_value createBuffer(napi_env env, napi_callback_info info) {
                      (0 == strcmp(svmFlag, "coarse")) ? eSvmType::COARSE :
                      eSvmType::NONE;
 
-  if (((eSvmType::FINE == svmType) && ((svmCaps & CL_DEVICE_SVM_FINE_GRAIN_BUFFER) == 0)) ||
-      ((eSvmType::COARSE == svmType) && ((svmCaps & CL_DEVICE_SVM_COARSE_GRAIN_BUFFER) == 0))) {
+  if ((eSvmType::FINE == svmType)  ||
+      (eSvmType::COARSE == svmType)) {
     status = napi_throw_error(env, nullptr, "Buffer type requested is not supported by device.");
     delete c;
     return nullptr;
